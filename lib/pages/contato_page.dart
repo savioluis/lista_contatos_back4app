@@ -1,30 +1,30 @@
 import 'dart:io';
-import 'package:lista_contatos/contato.dart';
+import 'package:lista_contatos/model/contato_model.dart';
+import 'package:lista_contatos/repository/contato_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
-class ContactRegistrationPage extends StatefulWidget {
-  final Contato? contact;
-  final ContactRepository repository;
+class ContatoPage extends StatefulWidget {
+  final Contato? contato;
+  final ContatoRepository repository;
 
-  const ContactRegistrationPage({this.contact, required this.repository});
+  const ContatoPage({this.contato, required this.repository});
 
   @override
-  _ContactRegistrationPageState createState() =>
-      _ContactRegistrationPageState();
+  _ContatoPageState createState() => _ContatoPageState();
 }
 
-class _ContactRegistrationPageState extends State<ContactRegistrationPage> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
+class _ContatoPageState extends State<ContatoPage> {
+  TextEditingController _nomeController = TextEditingController();
+  TextEditingController _telefoneController = TextEditingController();
   String? _imagePath;
-  int _age = 1;
+  int _idade = 1;
 
-  final _phoneRegex =
+  final _telefoneRegex =
       RegExp(r"^\([1-9]{2}\) (?:[2-8]|9[1-9])[0-9]{3}-[0-9]{4}$");
 
-  Future<void> _pickImage() async {
+  Future<void> _escolherImagemCamera() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
 
@@ -40,7 +40,7 @@ class _ContactRegistrationPageState extends State<ContactRegistrationPage> {
     }
   }
 
-  Future<void> _chooseImageFromGallery() async {
+  Future<void> _escolherImagemGaleria() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
@@ -59,11 +59,11 @@ class _ContactRegistrationPageState extends State<ContactRegistrationPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.contact != null) {
-      _nameController.text = widget.contact!.nome;
-      _phoneController.text = widget.contact!.telefone;
-      _age = widget.contact!.idade;
-      _imagePath = widget.contact!.imagem;
+    if (widget.contato != null) {
+      _nomeController.text = widget.contato!.nome;
+      _telefoneController.text = widget.contato!.telefone;
+      _idade = widget.contato!.idade;
+      _imagePath = widget.contato!.imagem;
     }
   }
 
@@ -72,7 +72,7 @@ class _ContactRegistrationPageState extends State<ContactRegistrationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.contact == null ? "Cadastro de Contato" : "Editar Contato",
+          widget.contato == null ? "Cadastro de Contato" : "Editar Contato",
         ),
       ),
       body: Padding(
@@ -87,35 +87,35 @@ class _ContactRegistrationPageState extends State<ContactRegistrationPage> {
                   height: 100,
                 ),
               ElevatedButton(
-                onPressed: _pickImage,
+                onPressed: _escolherImagemCamera,
                 child: const Text("Capturar foto"),
               ),
               ElevatedButton(
-                onPressed: _chooseImageFromGallery,
+                onPressed: _escolherImagemGaleria,
                 child: const Text("Escolher da galeria"),
               ),
               TextField(
-                controller: _nameController,
+                controller: _nomeController,
                 decoration: const InputDecoration(labelText: 'Nome'),
               ),
               TextFormField(
-                controller: _phoneController,
+                controller: _telefoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(labelText: 'Telefone'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, insira o telefone';
-                  } else if (!_phoneRegex.hasMatch(value)) {
+                  } else if (!_telefoneRegex.hasMatch(value)) {
                     return 'Telefone inválido';
                   }
                   return null;
                 },
               ),
               Slider(
-                value: _age.toDouble(),
+                value: _idade.toDouble(),
                 onChanged: (double value) {
                   setState(() {
-                    _age = value.toInt();
+                    _idade = value.toInt();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Idade selecionada com sucesso')),
                     );
@@ -124,28 +124,28 @@ class _ContactRegistrationPageState extends State<ContactRegistrationPage> {
                 min: 1,
                 max: 100,
                 divisions: 99,
-                label: '$_age anos',
+                label: '$_idade anos',
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final newContact = Contato(
-                    objectId: widget.contact?.objectId ?? '',
-                    nome: _nameController.text,
+                  final novoContato = Contato(
+                    objectId: widget.contato?.objectId ?? '',
+                    nome: _nomeController.text,
                     imagem: _imagePath ?? "",
-                    idade: _age,
-                    telefone: _phoneController.text,
+                    idade: _idade,
+                    telefone: _telefoneController.text,
                   );
 
-                  if (widget.contact == null) {
-                    await widget.repository.novoContato(newContact);
+                  if (widget.contato == null) {
+                    await widget.repository.novoContato(novoContato);
                   } else {
-                    await widget.repository
-                        .atualizarContato(widget.contact!.objectId, newContact);
+                    await widget.repository.atualizarContato(
+                        widget.contato!.objectId, novoContato);
                   }
 
                   Navigator.pop(context);
                 },
-                child: Text(widget.contact == null ? "Salvar" : "Atualizar"),
+                child: Text(widget.contato == null ? "Salvar" : "Atualizar"),
               )
             ],
           ),

@@ -1,19 +1,20 @@
 import 'dart:io';
 
-import 'package:lista_contatos/cadastrar_contato.dart';
-import 'package:lista_contatos/contato.dart';
+import 'package:lista_contatos/model/contato_model.dart';
+import 'package:lista_contatos/pages/contato_page.dart';
+import 'package:lista_contatos/repository/contato_repository.dart';
 import 'package:flutter/material.dart';
 
-class ContactsListPage extends StatefulWidget {
-  final ContactRepository repository;
+class ListaContatosPage extends StatefulWidget {
+  final ContatoRepository repository;
 
-  ContactsListPage({required this.repository});
+  ListaContatosPage({required this.repository});
 
   @override
-  _ContactsListPageState createState() => _ContactsListPageState();
+  _ListaContatosPageState createState() => _ListaContatosPageState();
 }
 
-class _ContactsListPageState extends State<ContactsListPage> {
+class _ListaContatosPageState extends State<ListaContatosPage> {
   late List<Contato> contatos;
   bool isLoading = true;
 
@@ -48,7 +49,7 @@ class _ContactsListPageState extends State<ContactsListPage> {
               itemBuilder: (context, index) {
                 final contato = contatos[index];
                 return Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   child: ListTile(
                     shape: RoundedRectangleBorder(
                       side: const BorderSide(width: 2, color: Colors.black54),
@@ -81,8 +82,8 @@ class _ContactsListPageState extends State<ContactsListPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ContactRegistrationPage(
-                            contact: contato,
+                          builder: (context) => ContatoPage(
+                            contato: contato,
                             repository: widget.repository,
                           ),
                         ),
@@ -98,7 +99,7 @@ class _ContactsListPageState extends State<ContactsListPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ContactRegistrationPage(
+              builder: (context) => ContatoPage(
                 repository: widget.repository,
               ),
             ),

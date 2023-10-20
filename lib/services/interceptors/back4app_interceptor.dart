@@ -4,9 +4,9 @@ class Back4AppDioInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.headers["X-Parse-Application-Id"] =
-        "rBmvRA24Sm2t8mDtI0ELOHeCnujImceWA2ShHIar";
+        "Application-Id HERE";
     options.headers["X-Parse-REST-API-Key"] =
-        "9pF0zq3doOc9EY9QEzyaB7eBK6myhXlPv0vLgRnG";
+        "API-Key HERE";
 
     print('REQUEST[${options.method}] => PATH: ${options.path}');
     print('HEADERS ${options.headers}');
